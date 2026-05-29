@@ -151,7 +151,7 @@ body {
     color: #b0bec5;
 }
 
-/* TABLERO 4x4 AJUSTADO PARA MÓVIL */
+/* TABLERO 4x4 PARA MÓVIL */
 .board {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -162,23 +162,33 @@ body {
     margin: auto 0;
 }
 
+/* ESTILO BASE DE LAS CARTAS (TRANSPARENCIA PARA VER LA GALAXIA) */
 .card {
-    background: #311b92;
-    border: 2px solid #512da8;
+    background: rgba(49, 27, 146, 0.2);
+    border: 2px solid rgba(81, 45, 168, 0.4);
     border-radius: 12px;
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 2rem;
     cursor: pointer;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-    transition: transform 0.2s, background-color 0.2s;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(3px);
+    transition: transform 0.2s, border-color 0.2s, background-color 0.2s;
 }
 
+/* CUANDO LA CARTA ESTÁ BOCA ABAJO (MUESTRA TU MARCA DE AGUA) */
 .card.facedown {
-    background-color: #1a0933 !important;
-    color: transparent !important;
-    border-color: #4a148c;
+    background-color: rgba(26, 9, 51, 0.75) !important;
+    border-color: rgba(74, 20, 140, 0.6);
+    color: rgba(255, 255, 255, 0.4) !important; /* Gris semitransparente sutil */
+    font-size: 0.75rem !important; /* Letra pequeña para que quepa "zonatrialapp" */
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    word-break: break-all;
+    padding: 4px;
+    text-align: center;
 }
 
 .card:active {
@@ -190,7 +200,7 @@ body {
     pointer-events: none;
 }
 
-/* BOTONES DE PODERES */
+/* BOTONES DE ACCIÓN */
 .action-buttons {
     display: flex;
     justify-content: space-between;
@@ -221,7 +231,7 @@ body {
     color: rgba(255, 255, 255, 0.2);
 }
 
-/* --- PANTALLAS DE OVERLAY (FIN DE JUEGO) --- */
+/* OVERLAYS */
 .overlay {
     position: fixed;
     top: 0; left: 0; width: 100vw; height: 100vh;
@@ -259,5 +269,4 @@ body {
 
 .restart-btn:active { transform: scale(0.95); }
 
-/* UTILIDAD */
 .hidden { display: none !important; }
