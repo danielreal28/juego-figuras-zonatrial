@@ -1,3 +1,4 @@
+/* --- CONFIGURACIÓN GENERAL (DISEÑO MÓVIL ESTÁTICO) --- */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -7,211 +8,256 @@
 }
 
 body {
+    background-color: #12071f;
+    color: #ffffff;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #0f0f14;
-    color: #fff;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    width: 100vw;
-    overflow: hidden; /* Elimina por completo cualquier posibilidad de scroll en PC o Móvil */
+    overflow: hidden;
 }
 
-/* Contenedor elástico inteligente: perfecto para PC y Móvil sin desborde lateral */
-.game-container {
-    width: 95vw; /* Ocupa casi todo el ancho de la pantalla del móvil */
-    max-width: 400px; /* Evita que en PC se estire de forma exagerada */
-    height: 96vh; /* Se ajusta verticalmente dejando un margen sutil */
-    background: #13131c;
-    border-radius: 20px;
-    padding: 16px;
-    box-shadow: 0 10px 35px rgba(0,0,0,0.5);
+/* --- ESTILOS DEL MENÚ DE INICIO --- */
+.menu-container {
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* Distribuye los bloques equitativamente */
-    border: 1px solid #222235;
+    align-items: center;
+    justify-content: center;
+    width: 100vw;
+    height: 100vh;
+    padding: 20px;
+    text-align: center;
 }
 
-/* Récords superiores */
-.records-ui {
+.game-title {
+    font-size: 2.3rem;
+    color: #00bcd4;
+    text-shadow: 0 0 12px rgba(0, 188, 212, 0.6);
+    margin-bottom: 30px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.history-box {
+    background: rgba(46, 28, 62, 0.85);
+    border: 2px solid #4a3266;
+    border-radius: 16px;
+    padding: 24px;
+    width: 90%;
+    max-width: 360px;
+    margin-bottom: 35px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.history-box h3 {
+    color: #ff9800;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+}
+
+.history-box p {
+    font-size: 1.1rem;
+    margin: 10px 0;
+    color: #e0e0e0;
+}
+
+.history-box span {
+    font-weight: bold;
+    color: #fff;
+}
+
+.menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 90%;
+    max-width: 360px;
+}
+
+.menu-btn {
+    padding: 16px;
+    font-size: 1.15rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    color: white;
+    transition: transform 0.1s;
+}
+
+.menu-btn:active {
+    transform: scale(0.96);
+}
+
+.menu-btn.continue {
+    background: #2e7d32;
+    box-shadow: 0 4px 12px rgba(46, 125, 50, 0.4);
+}
+
+.menu-btn.new-game {
+    background: #00838f;
+    box-shadow: 0 4px 12px rgba(0, 131, 143, 0.4);
+}
+
+.watermark-menu {
+    margin-top: 40px;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.3);
+}
+
+/* --- INTERFAZ DEL JUEGO ACTIVO --- */
+.game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    width: 100vw;
+    height: 100vh;
+    padding: 15px;
+}
+
+.header-stats {
     display: flex;
     justify-content: space-between;
-    background: #161622;
-    padding: 8px 12px;
+    width: 100%;
+    max-width: 360px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    background: #1f0f33;
+    padding: 10px 15px;
     border-radius: 8px;
-    font-size: 11px;
-    font-weight: bold;
-    color: #a0a0c0;
-    border: 1px solid #232336;
-    flex-shrink: 0;
-}
-#global-high { color: #ffca28; }
-#personal-high { color: #00e676; }
-
-/* Marcador principal */
-.header-ui {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    background: #1f1f2e;
-    padding: 10px;
-    border-radius: 14px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    flex-shrink: 0;
+    border: 1px solid #3d2266;
 }
 
-.stat-box { text-align: center; }
-.stat-box span {
-    font-size: 9px;
-    color: #8f8fbf;
-    display: block;
-    margin-bottom: 2px;
-    letter-spacing: 0.5px;
-}
-.stat-box div { font-size: 20px; font-weight: bold; }
-#score { color: #4caf50; }
-#lives { color: #ff5252; }
-#power-count { color: #00bcd4; }
-
-.diff-banner {
+#difficulty-alert {
+    width: 100%;
+    max-width: 360px;
     text-align: center;
-    font-size: 11px;
-    background: #2e1c3e;
-    color: #d1c4e9;
-    padding: 5px;
+    padding: 6px;
     border-radius: 6px;
+    font-size: 0.9rem;
     font-weight: bold;
-    margin-top: 5px;
-    flex-shrink: 0;
+    margin: 5px 0;
 }
 
-/* El Tablero: Flexible y adaptable en altura */
+.records-bar {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 360px;
+    font-size: 0.9rem;
+    color: #b0bec5;
+}
+
+/* TABLERO 4x4 AJUSTADO PARA MÓVIL */
 .board {
-    flex: 1;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    grid-gap: 8px; /* Separación balanceada para pantallas táctiles */
-    align-content: center;
-    margin: 10px 0;
+    gap: 10px;
+    width: 100%;
+    max-width: 360px;
+    aspect-ratio: 1 / 1;
+    margin: auto 0;
 }
 
 .card {
-    background: #1f1f2e;
-    aspect-ratio: 1;
-    border-radius: 10px;
+    background: #311b92;
+    border: 2px solid #512da8;
+    border-radius: 12px;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 26px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.4);
-    border: 2px solid #34344a;
+    font-size: 2rem;
     cursor: pointer;
-    position: relative;
-    transition: transform 0.1s ease;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    transition: transform 0.2s, background-color 0.2s;
 }
 
 .card.facedown {
-    background: #252538;
-    border-color: #44445c;
-    font-size: 0px !important;
+    background-color: #1a0933 !important;
+    color: transparent !important;
+    border-color: #4a148c;
 }
 
-/* Marca de agua interna de tu aplicación */
-.card.facedown::before {
-    content: "Zonatrial\A App";
-    white-space: pre-wrap;
-    position: absolute;
-    font-size: 9px;
-    font-weight: bold;
-    color: #4d4d6e;
-    text-align: center;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    transform: rotate(-15deg);
+.card:active {
+    transform: scale(0.95);
 }
 
-.card.selected {
-    background: #3e3163;
-    border-color: #00bcd4;
-}
-
-.card.hidden-card {
-    opacity: 0;
+.hidden-card {
+    visibility: hidden;
     pointer-events: none;
 }
 
-/* Botonera de acciones */
-.action-bar {
+/* BOTONES DE PODERES */
+.action-buttons {
     display: flex;
     justify-content: space-between;
-    gap: 8px;
-    flex-shrink: 0;
+    width: 100%;
+    max-width: 360px;
+    gap: 10px;
+    margin-bottom: 5px;
 }
 
 .game-btn {
-    flex: 1; 
-    background: #1f1f2e; 
+    flex: 1;
+    padding: 12px;
+    font-size: 0.95rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
     color: white;
-    border: 1px solid #34344a; 
-    padding: 12px 2px;
-    border-radius: 10px; 
-    font-size: 12px; 
-    font-weight: bold; 
     cursor: pointer;
 }
-.special-btn { background: #00bcd4; color: #121216; border: none; }
-.game-btn:active { background: #2d2d3f; }
 
-/* FIRMA DE COPYRIGHT FIJA Y CENTRADA AL RAS DEL CONTENEDOR */
-.author-signature {
-    text-align: center;
-    font-size: 11px;
-    color: #8f8fbf;
-    padding-top: 10px;
-    margin-top: 5px;
-    letter-spacing: 0.3px;
-    font-weight: 500;
-    border-top: 1px solid #222235;
-    flex-shrink: 0;
-}
-.author-signature span {
-    color: #00bcd4;
-    font-weight: bold;
+.game-btn:active { transform: scale(0.95); }
+.game-btn.power { background: #ff6f00; }
+.game-btn.shuffle { background: #0288d1; }
+.game-btn.hint { background: #009688; }
+
+.watermark {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.2);
 }
 
-/* Capa modal */
+/* --- PANTALLAS DE OVERLAY (FIN DE JUEGO) --- */
 .overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.85);
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(10, 4, 18, 0.95);
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 9999;
+    z-index: 10;
 }
-.modal {
-    background: #1f1f2e;
-    padding: 25px;
-    border-radius: 20px;
+
+.end-box {
+    background: #1f0f33;
+    border: 2px solid #00bcd4;
+    padding: 30px;
+    border-radius: 16px;
     text-align: center;
     width: 85%;
-    max-width: 320px;
-    border: 1px solid #34344a;
+    max-width: 340px;
+    box-shadow: 0 0 20px rgba(0, 188, 212, 0.4);
 }
-.action-btn {
-    margin-top: 20px;
-    background: #4caf50;
+
+.end-box h2 { font-size: 1.8rem; margin-bottom: 15px; color: #ff1744; }
+.end-box p { font-size: 1.1rem; margin-bottom: 25px; line-height: 1.5; }
+
+.restart-btn {
+    padding: 12px 25px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    background: #00bcd4;
     color: white;
     border: none;
-    padding: 12px 24px;
-    font-size: 15px;
-    font-weight: bold;
-    border-radius: 10px;
-    width: 100%;
+    border-radius: 8px;
     cursor: pointer;
 }
+
+.restart-btn:active { transform: scale(0.95); }
+
+/* UTILIDAD */
 .hidden { display: none !important; }
