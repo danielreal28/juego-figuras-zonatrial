@@ -14,6 +14,11 @@ const GLOBAL_HIGH = 2000;
 let personalHigh = parseInt(localStorage.getItem('personalHigh')) || 0;
 
 // --- ELEMENTOS DEL DOM ---
+const startScreen = document.getElementById('start-screen');
+const mainGameContainer = document.getElementById('main-game-container');
+const menuGlobalHigh = document.getElementById('menu-global-high');
+const menuPersonalHigh = document.getElementById('menu-personal-high');
+
 const gameBoard = document.getElementById('game-board');
 const scoreDisplay = document.getElementById('score');
 const livesDisplay = document.getElementById('lives');
@@ -25,66 +30,59 @@ const diffAlert = document.getElementById('difficulty-alert');
 const btnShuffle = document.getElementById('btn-shuffle');
 const btnHint = document.getElementById('btn-hint');
 const btnPower = document.getElementById('btn-power');
+const btnContinue = document.getElementById('btn-continue');
+const btnNewGame = document.getElementById('btn-new-game');
+
 const endScreen = document.getElementById('end-screen');
 const endTitle = document.getElementById('end-title');
 const endMessage = document.getElementById('end-message');
 const btnRestart = document.getElementById('btn-restart');
 
-// --- SISTEMA DE AUDIO REFORZADO (NUEVO MOTOR SEGURO) ---
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+// --- SISTEMA DE AUDIO OPTIMIZADO PARA NATIVO/CAPACITOR ---
+let audioCtx = null;
 const MELODY = [261.63, 293.66, 329.63, 349.23, 392.00, 349.23, 329.63, 293.66]; 
 let noteIndex = 0;
 
+function initAudioContext() {
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+}
+
 function playBackgroundMusicTick() {
-    // Si la partida terminó o el juego está en pausa, reintentamos en 450ms sin sonar
     if (lives <= 0 || boardCards.every(c => c.isCleared) || isPreviewing) {
         setTimeout(playBackgroundMusicTick, 450);
         return;
     }
-
     try {
-        if (audioCtx.state === 'suspended') {
-            audioCtx.resume();
-        }
-
+        initAudioContext();
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
-        
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-
-        osc.type = 'triangle'; // Sonido suave tipo Nintendo
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.type = 'triangle'; 
         osc.frequency.setValueAtTime(MELODY[noteIndex], audioCtx.currentTime);
-        
-        // Subimos un poco el volumen para asegurar que la oigas en los altavoces de la PC
         gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
-
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.4);
-
-        // Avanzar a la siguiente nota de la melodía
+        osc.start(); osc.stop(audioCtx.currentTime + 0.4);
         noteIndex = (noteIndex + 1) % MELODY.length;
-    } catch (e) {
-        console.log("Audio temporalmente en espera...");
-    }
-
-    // Volver a llamar de forma recursiva e infinita cada 450ms
+    } catch (e) {}
     setTimeout(playBackgroundMusicTick, 450);
 }
 
 function startBackgroundMusic() {
     if (!musicStarted) {
         musicStarted = true;
-        if (audioCtx.state === 'suspended') {
-            audioCtx.resume();
-        }
-        playBackgroundMusicTick(); // Arranca el bucle forzado
+        initAudioContext();
+        playBackgroundMusicTick(); 
     }
 }
 
 function playSound(type) {
-    if (audioCtx.state === 'suspended') audioCtx.resume();
+    initAudioContext();
+    if (!audioCtx) return;
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
     osc.connect(gain); gain.connect(audioCtx.destination);
@@ -104,26 +102,10 @@ function playSound(type) {
         osc.frequency.linearRampToValueAtTime(80, ahora + 0.2);
         gain.gain.setValueAtTime(0.12, ahora); gain.gain.exponentialRampToValueAtTime(0.01, ahora + 0.2);
         osc.start(ahora); osc.stop(ahora + 0.2);
-    } else if (type === 'victory') {
-        osc.type = 'square'; osc.frequency.setValueAtTime(523.25, ahora);
-        osc.frequency.setValueAtTime(659.25, ahora + 0.1); osc.frequency.setValueAtTime(783.99, ahora + 0.2);
-        osc.frequency.setValueAtTime(1046.50, ahora + 0.3);
-        gain.gain.setValueAtTime(0.1, ahora); gain.gain.exponentialRampToValueAtTime(0.01, ahora + 0.6);
-        osc.start(ahora); osc.stop(ahora + 0.6);
-    } else if (type === 'gameover') {
-        osc.type = 'sawtooth'; osc.frequency.setValueAtTime(120, ahora);
-        osc.frequency.linearRampToValueAtTime(40, ahora + 0.5);
-        gain.gain.setValueAtTime(0.2, ahora); gain.gain.exponentialRampToValueAtTime(0.01, ahora + 0.5);
-        osc.start(ahora); osc.stop(ahora + 0.5);
-    } else if (type === 'powerup') {
-        osc.type = 'sine'; osc.frequency.setValueAtTime(300, ahora);
-        osc.frequency.exponentialRampToValueAtTime(1200, ahora + 0.4);
-        gain.gain.setValueAtTime(0.15, ahora); gain.gain.exponentialRampToValueAtTime(0.01, ahora + 0.4);
-        osc.start(ahora); osc.stop(ahora + 0.4);
     }
 }
 
-// --- CALCULAR TIEMPO DE MEMORIA BASADO EN EL ACUMULADO ---
+// --- CALCULAR TIEMPO DE MEMORIA SEGÚN PUNTOS ---
 function getMemorizeTime() {
     if (personalHigh < 300) {
         diffAlert.textContent = "Nivel Inicial: 3s de memoria";
@@ -140,7 +122,26 @@ function getMemorizeTime() {
     }
 }
 
-// --- INICIAR PARTIDA ---
+// --- CONTROL DEL MENÚ PRINCIPAL ---
+function showMainMenu() {
+    personalHigh = parseInt(localStorage.getItem('personalHigh')) || 0;
+    menuGlobalHigh.textContent = GLOBAL_HIGH;
+    menuPersonalHigh.textContent = personalHigh;
+    
+    if (personalHigh === 0) {
+        btnContinue.style.opacity = "0.5";
+        btnContinue.style.pointerEvents = "none";
+    } else {
+        btnContinue.style.opacity = "1";
+        btnContinue.style.pointerEvents = "auto";
+    }
+
+    startScreen.classList.remove('hidden');
+    mainGameContainer.classList.add('hidden');
+    endScreen.classList.add('hidden');
+}
+
+// --- ARRANCAR EL JUEGO ---
 function initGame() {
     score = 0; lives = 7; powersLeft = 3; perfectStreak = 0;
     selectedCards = []; isPreviewing = true; 
@@ -150,6 +151,9 @@ function initGame() {
     powerDisplay.textContent = powersLeft;
     globalHighDisplay.textContent = GLOBAL_HIGH; 
     personalHighDisplay.textContent = personalHigh; 
+    
+    startScreen.classList.add('hidden');
+    mainGameContainer.classList.remove('hidden');
     endScreen.classList.add('hidden');
     
     let deck = [...SHAPES, ...SHAPES];
@@ -160,15 +164,12 @@ function initGame() {
     }));
     
     renderBoard();
-
     let timeToShow = getMemorizeTime();
     
     setTimeout(() => {
         const elements = document.querySelectorAll('.card');
         elements.forEach(el => el.classList.add('facedown'));
         isPreviewing = false; 
-        
-        // Intentar arrancar si ya se dio el primer clic antes
         if (musicStarted) startBackgroundMusic();
     }, timeToShow);
 }
@@ -184,26 +185,19 @@ function renderBoard() {
         if (card.isCleared) {
             cardElement.classList.add('hidden-card');
         } else {
-            if (!isPreviewing) {
-                cardElement.classList.add('facedown');
-            }
+            if (!isPreviewing) cardElement.classList.add('facedown');
             cardElement.addEventListener('click', () => handleCardClick(card, cardElement));
         }
         gameBoard.appendChild(cardElement);
     });
 }
 
-// --- MANEJADOR DE CLIC ACTIVA MÚSICA ---
 function handleCardClick(card, element) {
     if (isPreviewing || selectedCards.length >= 2 || !element.classList.contains('facedown')) return;
-    
-    // Al hacer el primer clic del juego, forzamos la activación de la música
     startBackgroundMusic();
-
     playSound('select');
     element.classList.remove('facedown'); 
     selectedCards.push({ card, element });
-    
     if (selectedCards.length === 2) {
         isPreviewing = true; 
         setTimeout(checkMatch, 500);
@@ -212,63 +206,46 @@ function handleCardClick(card, element) {
 
 function checkMatch() {
     const [first, second] = selectedCards;
-    
     if (first.card.shape === second.card.shape) {
-        first.card.isCleared = true;
-        second.card.isCleared = true;
-        first.element.classList.add('hidden-card');
-        second.element.classList.add('hidden-card');
-        
-        score += 10;
-        scoreDisplay.textContent = score;
-        perfectStreak++; 
-        
+        first.card.isCleared = true; second.card.isCleared = true;
+        first.element.classList.add('hidden-card'); second.element.classList.add('hidden-card');
+        score += 10; scoreDisplay.textContent = score; perfectStreak++; 
         if (perfectStreak === 3) {
-            powersLeft++;
-            powerDisplay.textContent = powersLeft;
-            perfectStreak = 0; 
-            playSound('powerup');
-        } else {
-            playSound('match');
-        }
-        
+            powersLeft++; powerDisplay.textContent = powersLeft;
+            perfectStreak = 0;
+        } else { playSound('match'); }
         checkGameOver();
     } else {
-        first.element.classList.add('facedown');
-        second.element.classList.add('facedown');
-        
-        lives--; 
-        livesDisplay.textContent = lives;
-        perfectStreak = 0; 
-        
-        playSound('error');
-        checkGameOver();
+        first.element.classList.add('facedown'); second.element.classList.add('facedown');
+        lives--; livesDisplay.textContent = lives; perfectStreak = 0; 
+        playSound('error'); checkGameOver();
     }
-    
     selectedCards = [];
-    if (lives > 0 && !boardCards.every(c => c.isCleared)) {
-        isPreviewing = false; 
-    }
+    if (lives > 0 && !boardCards.every(c => c.isCleared)) isPreviewing = false; 
 }
 
-// --- BOTONES DE ACCIÓN ---
+// --- ASIGNACIÓN DE BOTONES DEL MENÚ ---
+btnContinue.addEventListener('click', () => {
+    initAudioContext();
+    initGame();
+});
+
+btnNewGame.addEventListener('click', () => {
+    initAudioContext();
+    personalHigh = 0;
+    localStorage.setItem('personalHigh', 0);
+    initGame();
+});
+
+// --- BOTONES DE PODERES ---
 btnPower.addEventListener('click', () => {
     if (powersLeft <= 0 || isPreviewing || lives <= 0) return;
-    
-    powersLeft--;
-    powerDisplay.textContent = powersLeft;
-    perfectStreak = 0; 
-    isPreviewing = true;
-    
+    powersLeft--; powerDisplay.textContent = powersLeft; perfectStreak = 0; isPreviewing = true;
     const elements = document.querySelectorAll('.card');
     elements.forEach(el => el.classList.remove('facedown'));
-    playSound('powerup');
-
     setTimeout(() => {
         if (lives <= 0 || boardCards.every(c => c.isCleared)) return;
-        elements.forEach(el => {
-            if (!el.classList.contains('hidden-card')) el.classList.add('facedown');
-        });
+        elements.forEach(el => { if (!el.classList.contains('hidden-card')) el.classList.add('facedown'); });
         isPreviewing = false;
     }, 1200);
 });
@@ -278,15 +255,9 @@ btnShuffle.addEventListener('click', () => {
     let active = boardCards.filter(c => !c.isCleared);
     let shapes = active.map(c => c.shape);
     shapes.sort(() => Math.random() - 0.5);
-    
     let idx = 0;
-    boardCards.forEach(card => {
-        if (!card.isCleared) { card.shape = shapes[idx++]; }
-    });
-    
-    perfectStreak = 0; 
-    playSound('select');
-    renderBoard();
+    boardCards.forEach(card => { if (!card.isCleared) card.shape = shapes[idx++]; });
+    perfectStreak = 0; renderBoard();
 });
 
 btnHint.addEventListener('click', () => {
@@ -303,8 +274,6 @@ btnHint.addEventListener('click', () => {
                         setTimeout(() => el.style.borderColor = '', 800);
                     }
                 });
-                perfectStreak = 0; 
-                playSound('select');
                 return;
             }
         }
@@ -313,42 +282,31 @@ btnHint.addEventListener('click', () => {
 
 function checkGameOver() {
     const won = boardCards.every(card => card.isCleared);
-    
     if (won) {
         personalHigh += score;
         localStorage.setItem('personalHigh', personalHigh);
-        personalHighDisplay.textContent = personalHigh;
-        
         if (personalHigh >= GLOBAL_HIGH) {
             endTitle.textContent = "🏆 ¡RÉCORD MUNDIAL! 🏆";
             endMessage.textContent = `¡Felicidades DanielReal! Conquistaste la cima con ${personalHigh} pts totales.`;
         } else {
             endTitle.textContent = "¡VICTORIA TOTAL! 🎉";
-            endMessage.textContent = `Sumaste +${score} pts. Llevas acumulados: ${personalHigh} / 2000 para el récord mundial.`;
+            endMessage.textContent = `Sumaste +${score} pts. Llevas acumulados: ${personalHigh} / 2000.`;
         }
-        
         endScreen.classList.remove('hidden');
-        playSound('victory');
-        
     } else if (lives <= 0) {
-        const elements = document.querySelectorAll('.card');
-        elements.forEach(el => el.classList.remove('facedown')); 
-        
         endTitle.textContent = "GAME OVER 💀";
         endMessage.textContent = `Perdiste esta ronda. Tu acumulado sigue firme en: ${personalHigh} pts.`;
         endScreen.classList.remove('hidden');
-        playSound('gameover');
     }
 }
 
 btnRestart.addEventListener('click', () => {
-    initGame();
+    showMainMenu(); 
 });
 
 window.onload = () => {
-    initGame();
-    // Forzar activación del AudioContext global al primer clic en cualquier zona de la página
+    showMainMenu(); 
     document.body.addEventListener('click', () => {
-        if (audioCtx.state === 'suspended') audioCtx.resume();
+        initAudioContext();
     }, { once: true });
 };
