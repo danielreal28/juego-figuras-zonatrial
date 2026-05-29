@@ -2,55 +2,60 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
-    <title>Juego de Figuras Pro - Zonatrial</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Zonatrial Memory Game</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div class="game-container">
+    <div id="start-screen" class="menu-container">
+        <h1 class="game-title">ZONATRIAL MEMORY</h1>
         
-        <div class="records-ui">
-            <div class="record-item">🌍 MUNDIAL: <span id="global-high">2000</span></div>
-            <div class="record-item">👑 TU RECORD: <span id="personal-high">0</span></div>
-        </div>
-        
-        <div class="header-ui">
-            <div class="stat-box">
-                <span>PUNTOS</span>
-                <div id="score">0</div>
-            </div>
-            <div class="stat-box">
-                <span>VIDAS ❤️</span>
-                <div id="lives">7</div>
-            </div>
-            <div class="stat-box">
-                <span>PODERES 👁️</span>
-                <div id="power-count">3</div>
-            </div>
+        <div class="history-box">
+            <h3>📊 HISTORIAL DE JUEGO</h3>
+            <p>Récord Mundial: <span id="menu-global-high">2000</span> pts</p>
+            <p>Tu Récord Acumulado: <span id="menu-personal-high">0</span> pts</p>
         </div>
 
-        <div id="difficulty-alert" class="diff-banner">Nivel Inicial: 3s de memoria</div>
+        <div class="menu-buttons">
+            <button id="btn-continue" class="menu-btn continue">CONTINUAR PARTIDA</button>
+            <button id="btn-new-game" class="menu-btn new-game">NUEVO JUEGO</button>
+        </div>
+        
+        <div class="watermark-menu">Zonatrial App © DanielReal</div>
+    </div>
+
+    <div id="main-game-container" class="game-container hidden">
+        
+        <div class="header-stats">
+            <div>Score: <span id="score">0</span></div>
+            <div>Vidas: <span id="lives">7</span></div>
+            <div>Poderes: <span id="power-count">3</span></div>
+        </div>
+
+        <div id="difficulty-alert">Nivel Inicial: 3s de memoria</div>
+
+        <div class="records-bar">
+            <div>🏆 Récord: <span id="global-high">2000</span></div>
+            <div>👤 Tu Record: <span id="personal-high">0</span></div>
+        </div>
 
         <div id="game-board" class="board"></div>
 
-        <div class="action-bar">
-            <button id="btn-shuffle" class="game-btn">🔄 Mezclar</button>
-            <button id="btn-power" class="game-btn special-btn">👁️ Usar Poder</button>
-            <button id="btn-hint" class="game-btn">💡 Pista</button>
+        <div class="action-buttons">
+            <button id="btn-power" class="game-btn power">👁️ Revelar</button>
+            <button id="btn-shuffle" class="game-btn shuffle">🔀 Mezclar</button>
+            <button id="btn-hint" class="game-btn hint">💡 Pista</button>
         </div>
 
-        <div class="author-signature">
-            © 2026 <span>Zonatrialapp</span>. All Rights Reserved by DanielReal
-        </div>
-
+        <div class="watermark">Zonatrial App © DanielReal</div>
     </div>
 
     <div id="end-screen" class="overlay hidden">
-        <div class="modal">
-            <h2 id="end-title">¡VICTORIA! 🎉</h2>
-            <p id="end-message">Limpiaste el tablero.</p>
-            <button id="btn-restart" class="action-btn">Jugar de Nuevo</button>
+        <div class="end-box">
+            <h2 id="end-title">GAME OVER 💀</h2>
+            <p id="end-message">Perdiste esta ronda.</p>
+            <button id="btn-restart" class="restart-btn">Volver al Menú</button>
         </div>
     </div>
 
