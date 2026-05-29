@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <title>Juego de Figuras Pro - Zonatrial</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="game-container">
+        
+        <div class="records-ui">
+            <div class="record-item">🌍 MUNDIAL: <span id="global-high">2000</span></div>
+            <div class="record-item">👑 TU RECORD: <span id="personal-high">0</span></div>
+        </div>
+        
+        <div class="header-ui">
+            <div class="stat-box">
+                <span>PUNTOS</span>
+                <div id="score">0</div>
+            </div>
+            <div class="stat-box">
+                <span>VIDAS ❤️</span>
+                <div id="lives">7</div>
+            </div>
+            <div class="stat-box">
+                <span>PODERES 👁️</span>
+                <div id="power-count">3</div>
+            </div>
+        </div>
+
+        <div id="difficulty-alert" class="diff-banner">Nivel Inicial: 3s de memoria</div>
+
+        <div id="game-board" class="board"></div>
+
+        <div class="action-bar">
+            <button id="btn-shuffle" class="game-btn">🔄 Mezclar</button>
+            <button id="btn-power" class="game-btn special-btn">👁️ Usar Poder</button>
+            <button id="btn-hint" class="game-btn">💡 Pista</button>
+        </div>
+
+        <div class="author-signature">
+            © 2026 <span>Zonatrialapp</span>. All Rights Reserved by DanielReal
+        </div>
+
+    </div>
+
+    <div id="end-screen" class="overlay hidden">
+        <div class="modal">
+            <h2 id="end-title">¡VICTORIA! 🎉</h2>
+            <p id="end-message">Limpiaste el tablero.</p>
+            <button id="btn-restart" class="action-btn">Jugar de Nuevo</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
