@@ -33,6 +33,9 @@ jobs:
 
     - name: Capacitor Sync
       run: |
+        if [ ! -d "android" ]; then
+          npx cap add android
+        fi
         npx cap sync android
 
     - name: Build APK with Gradle
