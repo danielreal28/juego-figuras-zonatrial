@@ -168,7 +168,12 @@ function initGame() {
     
     setTimeout(() => {
         const elements = document.querySelectorAll('.card');
-        elements.forEach(el => el.classList.add('facedown'));
+        elements.forEach(el => {
+            if (!el.classList.contains('hidden-card')) {
+                el.classList.add('facedown');
+                el.textContent = 'zonatrialapp'; // Al taparse vuelve tu texto
+            }
+        });
         isPreviewing = false; 
         if (musicStarted) startBackgroundMusic();
     }, timeToShow);
@@ -179,13 +184,17 @@ function renderBoard() {
     boardCards.forEach(card => {
         const cardElement = document.createElement('div');
         cardElement.classList.add('card');
-        cardElement.textContent = card.shape;
         cardElement.dataset.id = card.id;
         
         if (card.isCleared) {
             cardElement.classList.add('hidden-card');
         } else {
-            if (!isPreviewing) cardElement.classList.add('facedown');
+            if (!isPreviewing) {
+                cardElement.classList.add('facedown');
+                cardElement.textContent = 'zonatrialapp'; // Muestra tu marca de agua
+            } else {
+                cardElement.textContent = card.shape; // Muestra figura en previsualización
+            }
             cardElement.addEventListener('click', () => handleCardClick(card, cardElement));
         }
         gameBoard.appendChild(cardElement);
@@ -197,6 +206,7 @@ function handleCardClick(card, element) {
     startBackgroundMusic();
     playSound('select');
     element.classList.remove('facedown'); 
+    element.textContent = card.shape; // Quita la marca de agua y muestra el emoji
     selectedCards.push({ card, element });
     if (selectedCards.length === 2) {
         isPreviewing = true; 
@@ -217,6 +227,8 @@ function checkMatch() {
         checkGameOver();
     } else {
         first.element.classList.add('facedown'); second.element.classList.add('facedown');
+        first.element.textContent = 'zonatrialapp'; // Regresa tu marca de agua si falla
+        second.element.textContent = 'zonatrialapp';
         lives--; livesDisplay.textContent = lives; perfectStreak = 0; 
         playSound('error'); checkGameOver();
     }
@@ -242,10 +254,22 @@ btnPower.addEventListener('click', () => {
     if (powersLeft <= 0 || isPreviewing || lives <= 0) return;
     powersLeft--; powerDisplay.textContent = powersLeft; perfectStreak = 0; isPreviewing = true;
     const elements = document.querySelectorAll('.card');
-    elements.forEach(el => el.classList.remove('facedown'));
+    elements.forEach(el => {
+        if (!el.classList.contains('hidden-card')) {
+            el.classList.remove('facedown');
+            let id = parseInt(el.dataset.id);
+            let c = boardCards.find(item => item.id === id);
+            if (c) el.textContent = c.shape; // Revela figuras temporalmente
+        }
+    });
     setTimeout(() => {
         if (lives <= 0 || boardCards.every(c => c.isCleared)) return;
-        elements.forEach(el => { if (!el.classList.contains('hidden-card')) el.classList.add('facedown'); });
+        elements.forEach(el => { 
+            if (!el.classList.contains('hidden-card')) {
+                el.classList.add('facedown');
+                el.textContent = 'zonatrialapp'; // Regresa la marca de agua
+            }
+        });
         isPreviewing = false;
     }, 1200);
 });
